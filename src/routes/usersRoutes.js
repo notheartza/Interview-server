@@ -5,7 +5,7 @@ var crypto = require('crypto');
 
 const router = require("express").Router()
 
-const { getToken, COOKIE_OPTIONS, getRefreshToken, getPlayload, verifylocal, verifyUser } = require("../authenticate")
+const { getToken, COOKIE_OPTIONS, getRefreshToken, getPlayload, verifylocal, verifyUser, verifyPassword, hashPassword } = require("../authenticate")
 
 router.post("/signup", (req, res) => {
     if (!req.body) return res.status(400).json({ status: 400, message: "The username and password is required", })
@@ -58,11 +58,13 @@ router.post("/signup", (req, res) => {
 
   router.post("/resetpassword", verifyUser, async (req, res) => {
       var user = await User.findById(req.user._id).select("hash salt").exec()
-      //crypto.pbkdf2.
+      //var currentPassword = await hashPassword(req.body.password)
+      var test = await verifyPassword(req.body.password, user.salt, user.hash)
+      console.log(test)
       return res.status(200).json({
         status: 200, message: {
           //token: token,
-          currentUser: user
+          currentUser: test
         }
       })
   })

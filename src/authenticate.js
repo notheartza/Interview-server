@@ -1,6 +1,7 @@
 const passport = require("passport")
 const jwt = require("jsonwebtoken")
 const dev = process.env.NODE_ENV !== "production"
+const crypto = require("crypto")
 
 exports.COOKIE_OPTIONS = {
     //httpOnly: true,
@@ -51,3 +52,26 @@ exports.verifyUser = (req, res, next) => {
       return next();
     })(req, res, next);
   }
+
+ exports.verifyPassword = (password, salt, hash) => {
+    return new Promise((resolve, reject) => {
+      //console.log("salt=> ",salt)
+        const key = hash.replace(salt, "")
+        //console.log("key=> ",key)
+        crypto.pbkdf2(password, salt, 25000, 512, 'sha256', (err, derivedKey) => {
+            if (err) reject(err);
+            //console.log("result=> ",derivedKey.toString('hex'))
+            resolve(key == derivedKey.toString('hex'))
+        });
+    })
+}
+
+exports.hashPassword = (password)=> {
+  return new Promise((resolve, reject) => {
+      const salt = crypto.randomBytes(32).toString("hex")
+      crypto.pbkdf2(password, salt, 25000, 512, 'sha256', (err, derivedKey) => {
+          if (err) reject(err);
+          resolve({"hash": salt + derivedKey.toString('hex'), "salt": salt})
+      });
+  })
+}
