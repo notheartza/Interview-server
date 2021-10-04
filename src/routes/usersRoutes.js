@@ -1,11 +1,11 @@
 const User = require("../model/users")
 const Session = require("../model/sessions")
 var ObjectId = require('mongoose').Types.ObjectId;
-var bcrypt = require('bcryptjs');
+var crypto = require('crypto');
 
 const router = require("express").Router()
 
-const { getToken, COOKIE_OPTIONS, getRefreshToken, getPlayload, verifylocal, v } = require("../authenticate")
+const { getToken, COOKIE_OPTIONS, getRefreshToken, getPlayload, verifylocal, verifyUser } = require("../authenticate")
 
 router.post("/signup", (req, res) => {
     if (!req.body) return res.status(400).json({ status: 400, message: "The username and password is required", })
@@ -56,8 +56,15 @@ router.post("/signup", (req, res) => {
     })
   });
 
-  router.post("/resetpassword", (req, res) => {
-      User.findById(req)
+  router.post("/resetpassword", verifyUser, async (req, res) => {
+      var user = await User.findById(req.user._id).select("hash salt").exec()
+      //crypto.pbkdf2.
+      return res.status(200).json({
+        status: 200, message: {
+          //token: token,
+          currentUser: user
+        }
+      })
   })
 
 

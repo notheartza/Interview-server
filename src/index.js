@@ -12,6 +12,7 @@ if (process.env.NODE_ENV !== "production") {
 
 require("./connectdb")
 require("./authenticate")
+require("./strategies/JwtStrategy") 
 require("./strategies/LocalStrategy")
 
 

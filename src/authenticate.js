@@ -37,3 +37,17 @@ exports.verifylocal = (req, res, next) => {
     return next()
     })(req, res, next)
 }
+
+
+exports.verifyUser = (req, res, next) => {
+    passport.authenticate("jwt", { session: false }, (err, user, info) => {
+      if (err) return res.status(400).json({ status: 400, message: err })
+      if (info){
+        return info.message == "jwt expired" ? res.status(403).json({ status: 403, message: "your token is expired please refresh your token or check your token." }) :
+        res.status(401).json({ status: 401, message: info.toString()})
+      }
+      if (!user) return res.status(401).json({ status: 401, message: "Unauthorized" })
+      req.user = user;
+      return next();
+    })(req, res, next);
+  }
