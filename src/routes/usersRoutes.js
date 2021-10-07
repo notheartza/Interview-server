@@ -102,7 +102,15 @@ router.post("/signup", (req, res) => {
   });
 
 
- 
+  router.get("/logout", verifyUser, (req, res) => {
+    const { signedCookies = {} } = req
+    const { refreshToken } = signedCookies
+    Session.findOneAndRemove({ ownerId: req.user._id, refreshToken: refreshToken }, (err) => {
+      if (err) return res.status(401).json({ status: 401, message: err })
+      res.clearCookie("refreshToken", COOKIE_OPTIONS)
+      return res.status(200).json({ status: 200, message: "success" })
+    })
+  });
 
  
 
