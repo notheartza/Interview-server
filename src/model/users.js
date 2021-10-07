@@ -14,7 +14,15 @@ const Users = new Schema({
     },
     firstName: String,
     lastName: String,
-    //img: String,
+    oldPassword: {
+        type: [Object],
+        select: false
+    },
+    img: {
+        data: Buffer,
+        contentType: String
+    },
+
 }, { strict: false, versionKey: false, timestamps: true, collection: "users" })
 
 Users.plugin(passportLocalMongoose)

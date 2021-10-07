@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  backend:
+    image: notheart/iig-server
+    container_name: node-backend
+    build: 
+      context: .
+      args:
+        SERVER_NAME: iig-server
+        NODE_ENV: prod
+    env_file: 
+      .env
