@@ -17,6 +17,7 @@ router.post("/signup", (req, res) => {
         getAuth.email = req.body.email
         getAuth.firstName = req.body.firstName
         getAuth.lastName = req.body.lastName
+        getAuth.image = req.body.image
         const token = getToken({ _id: getAuth._id })
         const refreshToken = getRefreshToken({ _id: getAuth._id })
         session.ownerId = getAuth._id
@@ -53,6 +54,13 @@ router.post("/signup", (req, res) => {
       })
     })
   });
+
+  router.post("/update/user", verifyUser, (req, res) => {
+    User.findByIdAndUpdate(req.user._id, req.body, { upsert: true }, (err) => {
+        if (err) return res.status(400).json({ status: 400, message: { status: "fail", message: err } })
+        return res.status(200).json({ status: 200, message: { status: "success" } })
+    })
+});
 
   router.post("/resetpassword", verifyUser, async (req, res) => {
     if(!req.body) return res.status(400).json({ status: 400, message: "please insert your password" }) 
@@ -114,12 +122,6 @@ router.post("/signup", (req, res) => {
 
  
 
-  router.post("/uploadProfile/:userId", fileUpload, (req, res) => {
-    if (!req.files) return res.status(400).json({ status: 401, message:'No files were uploaded.'});
-    console.log(req.files)
-    
-   
-  })
   
 
 module.exports = router
