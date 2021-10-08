@@ -17,7 +17,6 @@ router.post("/signup", (req, res) => {
         getAuth.email = req.body.email
         getAuth.firstName = req.body.firstName
         getAuth.lastName = req.body.lastName
-        getAuth.image = req.body.image
         const token = getToken({ _id: getAuth._id })
         const refreshToken = getRefreshToken({ _id: getAuth._id })
         session.ownerId = getAuth._id
@@ -26,6 +25,7 @@ router.post("/signup", (req, res) => {
         getAuth.save(async (err, user) => {
           if (err) return res.status(400).json({ status: 400, message: err, })
           res.cookie("refreshToken", refreshToken, COOKIE_OPTIONS)
+          if(req.body.image) await User.findByIdAndUpdate(getAuth._id,{"image": req.body.image}).exec()
           var get = await User.findById(getAuth._id).exec()
           return res.status(200).json({ status: 200, message: { token: token, currentUser: get } })
         })
@@ -42,7 +42,7 @@ router.post("/signup", (req, res) => {
       session.ownerId = req.user._id
       session.refreshToken = refreshToken
       session.save(async (err, user) => {
-        if (err) return res.status(400).json({ status: 400, message: {status: "fail" , message:err} })
+        if (err) return res.status(400).json({ status: 400, message: err })
         res.cookie("refreshToken", refreshToken, COOKIE_OPTIONS)
         var get = await User.findById(req.user._id).exec()
         return res.status(200).json({

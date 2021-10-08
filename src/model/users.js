@@ -10,7 +10,6 @@ const Users = new Schema({
     },
     email: {
         type: String,
-        unique: true,
     },
     firstName: String,
     lastName: String,
