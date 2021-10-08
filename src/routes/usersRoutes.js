@@ -42,7 +42,7 @@ router.post("/signup", (req, res) => {
       session.ownerId = req.user._id
       session.refreshToken = refreshToken
       session.save(async (err, user) => {
-        if (err) return res.status(400).json({ status: 400, message: err })
+        if (err) return res.status(400).json({ status: 400, message: {status: "fail" , message:err} })
         res.cookie("refreshToken", refreshToken, COOKIE_OPTIONS)
         var get = await User.findById(req.user._id).exec()
         return res.status(200).json({
