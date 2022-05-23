@@ -56,7 +56,7 @@ exports.verifyUser = (req, res, next) => {
 
 exports.verifyPassword = (password, salt, hash) => {
   return new Promise((resolve, reject) => {
-    const key = hash.replace(salt, "")
+    const key = hash.toString().replace(salt, "")
     crypto.pbkdf2(password, salt, 25000, 512, 'sha256', (err, derivedKey) => {
       if (err) reject(err);
       resolve(key == derivedKey.toString('hex'))
